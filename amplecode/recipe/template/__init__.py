@@ -3,7 +3,7 @@ Buildout template recipe using Jinja2.
 """
 
 __author__ = 'Torgeir Lorange Ostby <torgeilo@gmail.com>'
-__version__ = '1.0.0'
+__version__ = '0.1.0'
 __license__ = """
 Copyright (c) 2008, Torgeir Lorange Ostby <torgeilo@gmail.com>.
 All rights reserved.

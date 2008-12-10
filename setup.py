@@ -2,7 +2,15 @@ from setuptools import setup, find_packages
 
 setup(
     name='amplecode.recipe.template',
-    version='1.0.0',
+    version='0.1.0',
+
+    author='Torgeir Lorange Ostby',
+    author_email='torgeilo@gmail.com',
+    description='Buildout template recipe using Jinja2',
+    keywords='Buildout recipe template Jinja2',
+    license='BSD',
+    url='http://amplecode.org/',
+
     packages=find_packages(),
     namespace_packages=['amplecode', 'amplecode.recipe'],
     install_requires=['setuptools', 'zc.recipe.egg', 'Jinja2'],
