@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='amplecode.recipe.template',
-    version='0.1.0',
+    version='0.1.1',
 
     author='Torgeir Lorange Ostby',
     author_email='torgeilo@gmail.com',

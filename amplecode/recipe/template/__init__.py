@@ -3,7 +3,7 @@ Buildout template recipe using Jinja2.
 """
 
 __author__ = 'Torgeir Lorange Ostby <torgeilo@gmail.com>'
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 __license__ = """
 Copyright (c) 2008, Torgeir Lorange Ostby <torgeilo@gmail.com>.
 All rights reserved.
@@ -69,6 +69,10 @@ class Recipe(object):
     def install(self):
         non_string_options = dict()
 
+        # Strip options
+        for key, value in self.options.iteritems():
+            self.options[key] = value.strip()
+
         # Make eggs available to template if specified
         if "eggs" in self.options:
             log.info("Making working set out of the eggs")
@@ -112,6 +116,7 @@ class Recipe(object):
         # Set up jinja2 environment
         jinja2_env = jinja2.Environment(loader=jinja2.FileSystemLoader(
                 self.buildout["buildout"]["directory"]))
+        jinja2_env.tests['iterable'] = lambda x: hasattr(x, '__iter__')
 
         for template_file, target_file, executable in files:
             # Load template
