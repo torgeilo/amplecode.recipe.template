@@ -3,7 +3,7 @@ Buildout template recipe using Jinja2.
 """
 
 __author__ = 'Torgeir Lorange Ostby <torgeilo@gmail.com>'
-__version__ = '0.1.1'
+__version__ = '1.0'
 __license__ = """
 Copyright (c) 2008, Torgeir Lorange Ostby <torgeilo@gmail.com>.
 All rights reserved.
@@ -114,8 +114,9 @@ class Recipe(object):
         files = zip(template_files, target_files, target_executables)
 
         # Set up jinja2 environment
-        jinja2_env = jinja2.Environment(loader=jinja2.FileSystemLoader(
-                self.buildout["buildout"]["directory"]))
+        base = os.path.abspath(os.path.join(self.buildout["buildout"]["directory"],
+                                            self.options.get("base-dir", "")))
+        jinja2_env = jinja2.Environment(loader=jinja2.FileSystemLoader(base))
         jinja2_env.tests['iterable'] = lambda x: hasattr(x, '__iter__')
 
         for template_file, target_file, executable in files:
