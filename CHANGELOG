@@ -1,0 +1,15 @@
+Version 1.0 (2009-04-13)
+------------------------
+
+* Added base-dir option for setting the root of the Jinja2 environment. Default is the Buildout directory as before.
+
+Version 0.1.1 (2008-12-11)
+--------------------------
+
+* Stripping all options before supplying to the templates
+* Added a test for checking if a value is iterable to the Jinja2 environment
+
+Version 0.1 (2008-12-10)
+------------------------
+
+* Initial version
