@@ -17,7 +17,7 @@ Buildout Options
 
 Additional options are simply forwarded to the templates, and options from all the other parts listed in buildout:parts are made available through ``parts.<part-name>.<option-name>`` and ``parts[<part-name>][<option-name>]``.
 
-Lists of values
+Lists of Values
 ===============
 
 It is possible for a recipe option to contain one or more values, separated by whitespace. A split filter is available for when you want to iterate over the whitespace separated values in your Jinja2 template::
