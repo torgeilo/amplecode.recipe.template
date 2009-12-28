@@ -1,3 +1,10 @@
+Version 1.1 (pending)
+---------------------
+
+* Replaced iterable test with split filter for better control and simpler template logic
+* Made options from other parts available through parts.<part-name>.<option-name> and parts[<part-name>][<option-name>]. Thanks to Remco Wendt for patch.
+
+
 Version 1.0 (2009-04-13)
 ------------------------
 

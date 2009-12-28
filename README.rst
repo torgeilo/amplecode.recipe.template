@@ -15,21 +15,17 @@ Buildout Options
 * target-executable: One or more boolean flags (yes|no|true|false|1|0) indicating the executability of the target files. If only one flag is given it is applied to all target files. 
 * eggs: Reserved for a list of eggs, conveniently converted into a pkg_resources.WorkingSet when specified 
 
-Additional options are simply forwarded to the templates, and multi-line options are converted into lists of strings first.
+Additional options are simply forwarded to the templates, and options from all the other parts listed in buildout:parts are made available through ``parts.<part-name>.<option-name>`` and ``parts[<part-name>][<option-name>]``.
 
-Iterables
-=========
+Lists of values
+===============
 
-It is possible for a recipe option to contain one or more values, where in the latter case the values are put in a list before supplied to the templates. To find out if an option value is iterable or not, one can use the iterable test (Jinja2)::
+It is possible for a recipe option to contain one or more values, separated by whitespace. A split filter is available for when you want to iterate over the whitespace separated values in your Jinja2 template::
 
   #!/bin/sh
-  {% if values is iterable %}
-    {% for value in values %}
-       echo "{{ value }}"
-    {% endfor %}
-  {% else %}
-    echo "{{ values }}"
-  {% endif %}
+  {% for cmd in cmds|split %}
+     echo "{{ cmd }}"
+  {% endfor %}
 
 Minimal Example
 ===============
