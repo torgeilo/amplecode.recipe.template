@@ -2,20 +2,20 @@
 amplecode.recipe.template
 =========================
 
-amplecode.recipe.template is a Buildout recipe for generating files using Jinja2 templates. The recipe configures a Jinja2 environment, by default relative to the Buildout directory, allowing templates to extend and include other templates relative to the environment. 
+amplecode.recipe.template is a Buildout recipe for generating files using Jinja2 templates. The recipe configures a Jinja2 environment, by default relative to the Buildout directory, allowing templates to extend and include other templates relative to the environment.
 
 Downloads are available from pypi: http://pypi.python.org/pypi/amplecode.recipe.template/
 
 Buildout Options
 ================
 
-* template-file (required): One or more Jinja2 template file paths. 
-* target-file (required): One of more target file paths. The number of files must match the number of template files. 
-* base-dir: Base directory of the Jinja2 environment. Template file paths are relative to this directory. Default is the Buildout directory. 
-* target-executable: One or more boolean flags (yes|no|true|false|1|0) indicating the executability of the target files. If only one flag is given it is applied to all target files. 
-* eggs: Reserved for a list of eggs, conveniently converted into a pkg_resources.WorkingSet when specified 
+* template-file (required): One or more Jinja2 template file paths.
+* target-file (required): One of more target file paths. The number of files must match the number of template files.
+* base-dir: Base directory of the Jinja2 environment. Template file paths are relative to this directory. Default is the Buildout directory.
+* target-executable: One or more boolean flags (yes|no|true|false|1|0) indicating the executability of the target files. If only one flag is given it is applied to all target files.
+* eggs: Reserved for a list of eggs, conveniently converted into a pkg_resources.WorkingSet when specified
 
-Additional options are simply forwarded to the templates, and options from all the other parts listed in buildout:parts are made available through ``parts.<part-name>.<option-name>`` and ``parts[<part-name>][<option-name>]``.
+Additional options are simply forwarded to the templates, and options from all the other parts are made available through ``parts.<part-name>.<option-name>`` and ``parts[<part-name>][<option-name>]``.
 
 Lists of Values
 ===============
