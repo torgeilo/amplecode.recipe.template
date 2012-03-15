@@ -1,3 +1,9 @@
+Version 1.2 (pending)
+---------------------
+
+* All necessary subdirectories are created for the target files. Thanks to brodul for the patch.
+* All parts in buildout.cfg are available to the templates, instead of being limited to the parts listed in buildout:parts. Thanks to brodul for the patch.
+
 Version 1.1 (2012-02-23)
 ------------------------
 

@@ -13,7 +13,7 @@ Buildout Options
 * target-file (required): One of more target file paths. The number of files must match the number of template files.
 * base-dir: Base directory of the Jinja2 environment. Template file paths are relative to this directory. Default is the Buildout directory.
 * target-executable: One or more boolean flags (yes|no|true|false|1|0) indicating the executability of the target files. If only one flag is given it is applied to all target files.
-* eggs: Reserved for a list of eggs, conveniently converted into a pkg_resources.WorkingSet when specified
+* eggs: Reserved for a list of eggs, conveniently converted into a pkg_resources.WorkingSet when specified.
 
 Additional options are simply forwarded to the templates, and options from all the other parts are made available through ``parts.<part-name>.<option-name>`` and ``parts[<part-name>][<option-name>]``.
 
