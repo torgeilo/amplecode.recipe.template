@@ -104,11 +104,8 @@ class Recipe(object):
             names, eggs = eggs.working_set()
             context["eggs"] = eggs
 
-        # Make options from other parts available. The parts include the
-        # buildout part and all parts specified in the buildout part.
-        part_options = {}
-        for part in ['buildout'] + split(self.buildout["buildout"]["parts"]):
-            part_options[part] = strip_dict(dict(self.buildout[part].items()))
+        # Make options from other parts available.
+        part_options = self.buildout
         if 'parts' not in context.keys():
             context.update({'parts': part_options})
         else:
