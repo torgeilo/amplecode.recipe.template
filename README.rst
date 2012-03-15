@@ -9,10 +9,8 @@ Downloads are available from pypi: http://pypi.python.org/pypi/amplecode.recipe.
 Buildout Options
 ================
 
-* template-file (required): One or more Jinja2 template file paths.
-* target-file (required): One of more target file paths. The number of files must match the number of template files.
-* base-dir: Base directory of the Jinja2 environment. Template file paths are relative to this directory. Default is the Buildout directory.
-* target-executable: One or more boolean flags (yes|no|true|false|1|0) indicating the executability of the target files. If only one flag is given it is applied to all target files.
+* templates: A list of template paths, output file paths, and potentially file modes. The different elements can be separated by any kind of whitespace. Paths containing whitespace can be enclosed in double quotes. Please see the examples below.
+* root: Base directory of the Jinja2 environment, and the root of all template and relative file paths. Default is the Buildout directory.
 * eggs: Reserved for a list of eggs, conveniently converted into a pkg_resources.WorkingSet when specified.
 
 Additional options are simply forwarded to the templates, and options from all the other parts are made available through ``parts.<part-name>.<option-name>`` and ``parts[<part-name>][<option-name>]``.
@@ -20,7 +18,7 @@ Additional options are simply forwarded to the templates, and options from all t
 Lists of Values
 ===============
 
-It is possible for a recipe option to contain one or more values, separated by whitespace. A split filter is available for when you want to iterate over the whitespace separated values in your Jinja2 template::
+It is possible for a recipe option to contain one or more values, separated by whitespace. A split filter is available for when you want to iterate over whitespace-separated values in your Jinja2 template::
 
   #!/bin/sh
   {% for cmd in cmds|split %}
@@ -37,8 +35,7 @@ foo.txt is created from foo.txt.jinja2 without any extra options::
 
   [foo]
   recipe = amplecode.recipe.template
-  template-file = foo.txt.jinja2
-  target-file = foo.txt
+  templates = foo.txt.jinja2 foo.txt
 
 Larger Example
 ==============
@@ -50,18 +47,34 @@ foo.txt is created from myapp/foo.txt.jinja2, bar.sh is created from myapp/bar.s
 
   [foo]
   recipe = amplecode.recipe.template
-  base-dir = myapp
-  template-file =
-      foo.txt.jinja2
-      bar.sh.jinja2
-  target-file =
-      foo.txt
-      bar.sh
-  target-executable =
-      false
-      true
+  root = myapp
+  templates =
+      foo.txt.jinja2 foo.txt
+      bar.sh.jinja2 bar.sh mode=0775
   project_name = Another Example
   author = Me
+
+The mode value must be octal, as supported by ``os.chmod``.
+
+Any kind of whitespace is allowed between the elements in the templates option, including line breaks. No whitespace is allowed in the mode argument. The above example could very well be written as::
+
+  [buildout]
+  parts = foo
+
+  [foo]
+  recipe = amplecode.recipe.template
+  root = myapp
+  templates =
+      foo.txt.jinja2
+      foo.txt
+
+      bar.sh.jinja2
+      bar.sh
+      mode=0775
+  project_name = Another Example
+  author = Me
+
+If a path contains spaces, it can be enclosed in double quotes (").
 
 Changelog
 =========

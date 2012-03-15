@@ -2,11 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name="amplecode.recipe.template",
-    version="1.1",
+    version="2.0",
     author="Torgeir Lorange Ostby",
     author_email="torgeilo@gmail.com",
     url="http://github.com/torgeilo/amplecode.recipe.template",
-    description="Buildout recipe for making files out of Jinja2 templates",
+    description="Buildout recipe for making files from Jinja2 templates",
     long_description=open("README.rst").read(),
     classifiers=(
         "Framework :: Buildout",
