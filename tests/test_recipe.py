@@ -3,7 +3,7 @@ import unittest
 
 
 class TestRecipe(unittest.TestCase):
-    RESULT_BASE_DIR = ".."
+    RESULT_BASE_DIR = "../.."
 
     def test_a(self):
         result_dir = os.path.abspath(os.path.join(self.RESULT_BASE_DIR,
