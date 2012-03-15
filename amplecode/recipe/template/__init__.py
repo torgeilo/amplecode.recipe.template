@@ -179,6 +179,5 @@ class Recipe(object):
         Ensures that the specified directory exists.
         """
 
-        if not os.path.exists(directory):
-            os.mkdir(directory)
-            self.options.created(directory)
+        if directory and not os.path.exists(directory):
+            os.makedirs(directory)
