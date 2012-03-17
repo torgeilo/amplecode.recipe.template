@@ -11,7 +11,7 @@ Buildout Options
 
 * templates: A list of template paths, output file paths, and potentially file modes. The different elements can be separated by any kind of whitespace. Paths containing whitespace can be enclosed in double quotes. Please see the examples below.
 * filters: A list of template filter libraries. The libraries must be python modules containing a ``filters`` attribute, holding a dictionary of filter names and functions. The filters are loaded in order, potentially overriding any previous filters with same names.
-* root: Base directory of the Jinja2 environment, and the root of all template and relative file paths. Default is the Buildout directory.
+* root: Base directory of the Jinja2 environment and the root of all relative file paths. Default is the Buildout directory.
 * eggs: Reserved for a list of eggs, conveniently converted into a ``pkg_resources.WorkingSet`` when specified.
 
 Additional options are simply forwarded to the templates, and options from all the other parts are made available through ``parts.<part-name>.<option-name>`` and ``parts[<part-name>][<option-name>]``.
