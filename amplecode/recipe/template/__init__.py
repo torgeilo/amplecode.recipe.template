@@ -8,13 +8,15 @@ __version__ = "2.0"
 
 import os
 import re
+import sys
 import logging
 import jinja2
 
 from zc.buildout import UserError
 from zc.recipe.egg.egg import Eggs
 
-from amplecode.recipe.template.filters import template_filters
+from amplecode.recipe.template.filters import split
+from amplecode.recipe.template.filters import default_filters
 
 
 log = logging.getLogger(__name__)
@@ -55,15 +57,17 @@ class Recipe(object):
 
         # Parse the templates option
         p = re.compile(r"(\".+\"|\S+)\s+(\".+\"|\S+)(?:\s+mode=(\d+))?")
-        templates = p.finditer(self.options.get("templates", ""))
+        templates = p.findall(self.options.get("templates", ""))
+        if not templates:
+            log.warning("No templates specified")
 
         # Configure the template environments
         env = jinja2.Environment(loader=jinja2.FileSystemLoader(root))
-        env.filters.update(template_filters)
+        env.filters.update(self._load_filters())
         context = self._create_context()
 
         for template in templates:
-            self._render(root, env, context, *template.groups())
+            self._render(root, env, context, *template)
 
         return self.options.created()
 
@@ -126,3 +130,21 @@ class Recipe(object):
             context["eggs"] = eggs
 
         return context
+
+    def _load_filters(self):
+        """
+        Create a dict of template filters. Add the default filters and load any
+        filter libraries listed in the options.
+        """
+
+        filters = {}
+        filters.update(default_filters)
+
+        modules = split(self.options.get("filters", ""))
+
+        for module in modules:
+            log.info("Loading filters from " + module)
+            __import__(module)
+            filters.update(sys.modules[module].filters)
+
+        return filters

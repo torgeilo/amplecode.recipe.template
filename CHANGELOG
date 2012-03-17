@@ -3,6 +3,7 @@ Version 2.0 (pending)
 
 * Replaced the template-file, target-file, and executable option with a single templates option.
 * Replaced the base-dir option with the root option, which is used for both templates and relative file paths.
+* Added the filters option, making it possible to load custom template filter libraries.
 
 Version 1.2 (pending)
 ---------------------

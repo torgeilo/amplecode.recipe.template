@@ -3,10 +3,13 @@ import re
 
 def split(s):
     """
-    Split a string on any whitespace.
+    Strip and split a string on any whitespace.
     """
 
-    return re.split("\s+", s.strip())
+    s = s.strip()
+    if s:
+        return re.split("\s+", s)
+    return []
 
 
 def as_bool(s):
@@ -17,7 +20,7 @@ def as_bool(s):
     return s.lower() in ("yes", "true", "1", "on")
 
 
-template_filters = {
+default_filters = {
     "split": split,
     "as_bool": as_bool,
     "type": type,

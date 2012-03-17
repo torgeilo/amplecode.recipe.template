@@ -10,20 +10,11 @@ Buildout Options
 ================
 
 * templates: A list of template paths, output file paths, and potentially file modes. The different elements can be separated by any kind of whitespace. Paths containing whitespace can be enclosed in double quotes. Please see the examples below.
+* filters: A list of template filter libraries. The libraries must be python modules containing a ``filters`` attribute, holding a dictionary of filter names and functions.
 * root: Base directory of the Jinja2 environment, and the root of all template and relative file paths. Default is the Buildout directory.
 * eggs: Reserved for a list of eggs, conveniently converted into a pkg_resources.WorkingSet when specified.
 
 Additional options are simply forwarded to the templates, and options from all the other parts are made available through ``parts.<part-name>.<option-name>`` and ``parts[<part-name>][<option-name>]``.
-
-Lists of Values
-===============
-
-It is possible for a recipe option to contain one or more values, separated by whitespace. A split filter is available for when you want to iterate over whitespace-separated values in your Jinja2 template::
-
-  #!/bin/sh
-  {% for cmd in cmds|split %}
-     echo "{{ cmd }}"
-  {% endfor %}
 
 Minimal Example
 ===============
@@ -40,13 +31,16 @@ foo.txt is created from foo.txt.jinja2 without any extra options::
 Larger Example
 ==============
 
-foo.txt is created from myapp/foo.txt.jinja2, bar.sh is created from myapp/bar.sh.jinja2, the second will be executable, and both templates can utilize the additional options specified::
+foo.txt is created from myapp/foo.txt.jinja2, bar.sh is created from myapp/bar.sh.jinja2, the second will be executable, and both templates can utilize the additional options and template filters::
 
   [buildout]
   parts = foo
 
   [foo]
   recipe = amplecode.recipe.template
+  filters =
+      my.custom,filters
+      another.filter.module
   root = myapp
   templates =
       foo.txt.jinja2 foo.txt
@@ -64,6 +58,9 @@ Any kind of whitespace is allowed between the elements in the templates option, 
   [foo]
   recipe = amplecode.recipe.template
   root = myapp
+  filters =
+      my.custom,filters
+      another.filter.module
   templates =
       foo.txt.jinja2
       foo.txt
@@ -75,6 +72,22 @@ Any kind of whitespace is allowed between the elements in the templates option, 
   author = Me
 
 If a path contains spaces, it can be enclosed in double quotes (").
+
+Lists of Values
+===============
+
+If you want to iterate over a whitespace-separated list of values, provided in a single option, you can use the split filter, available by default. For example, if your buildout.cfg contains::
+
+  ...
+  words = Hello world!
+  ...
+
+you can use it in your Jinja2 template like::
+
+  #!/bin/sh
+  {% for word in words|split %}
+     echo "{{ word }}"
+  {% endfor %}
 
 Changelog
 =========
