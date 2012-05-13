@@ -1,0 +1,6 @@
+{{ parts.buildout.directory }}
+{%- for job in jobs %}
+{{ job.template }}
+{%- endfor %}
+{{ jobs.current.mode }}
+
