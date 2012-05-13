@@ -1,13 +1,9 @@
-Version 2.0 (pending)
----------------------
+Version 2.0
+-----------
 
-* Replaced the template-file, target-file, and executable option with a single templates option.
-* Replaced the base-dir option with the root option, which is used for both templates and relative file paths.
-* Added the filters option, making it possible to load custom template filter libraries.
-
-Version 1.2 (pending)
----------------------
-
+* The template-file, target-file, and target-executable options are deprecated in favor a single jobs option. All jobs definitions and the current one are available in the template context.
+* The base-dir option is deprecated in favor of a root option. The root path is applied to both the template engine and the target files.
+* Added a filters option, making it possible to load custom template filter libraries.
 * All necessary subdirectories are created for the target files. Thanks to brodul for the patch.
 * All parts in buildout.cfg are available to the templates, instead of being limited to the parts listed in buildout:parts. Thanks to brodul for the patch.
 
