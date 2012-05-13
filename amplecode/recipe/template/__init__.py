@@ -11,15 +11,16 @@ import re
 import sys
 import logging
 import jinja2
+import warnings
 
 from zc.buildout import UserError
 from zc.recipe.egg.egg import Eggs
 
-from amplecode.recipe.template.filters import split
-from amplecode.recipe.template.filters import default_filters
+from amplecode.recipe.template.filters import split, as_bool, default_filters
 
 
 log = logging.getLogger(__name__)
+warnings.simplefilter("default")
 
 
 class Recipe(object):
@@ -49,82 +50,146 @@ class Recipe(object):
         Recipe install function.
         """
 
+        root_option = "root"
+        root_targets = True
+
+        if "template-file" in self.options:
+            message = ("The template-file, target-file, target-executable, "
+                    "and base-dir options have been deprecated in favor of "
+                    "the jobs and root options. See the documentation in the "
+                    "README.rst file.")
+            warnings.warn(message, DeprecationWarning)
+
+            jobs = self._parse_jobs_old()
+            root_option = "base-dir"
+            root_targets = False
+        elif "jobs" in self.options:
+            jobs = self._parse_jobs()
+        else:
+            log.warning("No jobs option specified. Nothing to do!")
+            return
+
         # The root directory is absolute or relative to the buildout root
-        root = self.options.get("root", ".")
+        root = self.options.get(root_option, ".")
         if not os.path.isabs(root):
             root = os.path.abspath(os.path.join(
                     self.buildout["buildout"]["directory"], root))
 
-        # Parse the templates option
-        p = re.compile(r"(\".+\"|\S+)\s+(\".+\"|\S+)(?:\s+mode=(\d+))?")
-        templates = p.findall(self.options.get("templates", ""))
-        if not templates:
-            log.warning("No templates specified")
-
         # Configure the template environments
         env = jinja2.Environment(loader=jinja2.FileSystemLoader(root))
         env.filters.update(self._load_filters())
-        context = self._create_context()
+        context = self._create_context(jobs)
 
-        for template in templates:
-            self._render(root, env, context, *template)
+        for job in jobs:
+            context["jobs"].current = job
+            self._render(root, env, context, root_targets=root_targets, **job)
 
         return self.options.created()
 
-    def _render(self, root, env, context, template_file, target_file, mode):
+    def _parse_jobs(self):
+        """
+        Parse the jobs option.
+        """
+
+        p = re.compile(r"(?P<template>\".+?\"|'.+?'|\S+)\s+"
+                       r"(?P<target>\".+?\"|'.+?'|\S+)"
+                       r"(?:\s+mode=(?P<mode>\d+))?")
+        jobs = []
+        for match in p.finditer(self.options["jobs"]):
+            job = match.groupdict()
+            job["template"] = job["template"].strip("\"'")
+            job["target"] = job["target"].strip("\"'")
+            jobs.append(job)
+
+        return jobs
+
+    def _parse_jobs_old(self):
+        """
+        Parse the template-file, target-file and target-executable options.
+        """
+
+        templates = split(self.options.get("template-file", ""))
+        targets = split(self.options.get("target-file", ""))
+
+        if len(templates) != len(targets):
+            raise UserError(
+                    "The number of template and target files much match")
+
+        executables = split(self.options.get("target-executable", "false"))
+        executables = map(as_bool, executables)
+
+        if len(executables) == 1:
+            value = executables[0]
+            executables = (value for i in xrange(len(templates)))
+        elif len(executables) != len(templates):
+            raise UserError("The number of target executables must be 0, 1, "
+                    "or match the number of template files")
+
+        return [
+            {
+                "template": template,
+                "target": target,
+                "mode": "0755" if executable else None,
+            }
+            for template, target, executable
+            in zip(templates, targets, executables)
+        ]
+
+    def _render(self, root, env, context, template=None, target=None,
+                mode=None, root_targets=True):
         """
         Render the given template, save, and set the mode. Create any target
         directories, if necessary.
         """
 
-        template_file = template_file.strip('"')
-        target_file = target_file.strip('"')
-
-        log.info(template_file + " -> " + target_file +
+        log.debug(template + " -> " + target +
                  (", mode=" + mode if mode else ""))
 
         try:
-            template = env.get_template(template_file)
+            template = env.get_template(template)
         except jinja2.TemplateNotFound, e:
-            log.error("Could not find the template file: %s" % e.name)
             raise UserError("Template file not found: %s" % e.name)
 
-        if not os.path.isabs(target_file):
-            target_file = os.path.join(root, target_file)
+        if root_targets and not os.path.isabs(target):
+            target = os.path.join(root, target)
 
-        target_dir = os.path.dirname(target_file)
+        target_dir = os.path.dirname(target)
         if not os.path.exists(target_dir):
             os.makedirs(target_dir)
 
         output = template.render(**context)
 
-        fp = open(target_file, "wt")
+        fp = open(target, "wt")
         fp.write(output)
         fp.close()
 
         if mode:
-            os.chmod(target_file, int(mode, 8))
+            os.chmod(target, int(mode, 8))
 
-        self.options.created(target_file)
+        self.options.created(target)
 
-    def _create_context(self):
+    def _create_context(self, jobs):
         """
         The template context contains the local options, a reference to the
         other parts, and potentially a list of eggs.
         """
 
+        class CurrentList(list):
+            """
+            Custom list class that has a current property as well (that needs
+            to be maintained manually).
+            """
+
+            def __init__(self, *args, **kwargs):
+                super(CurrentList, self).__init__(*args, **kwargs)
+                self.current = None
+
         context = dict((k, v.strip()) for k, v in self.options.iteritems())
-
-        if 'parts' in context.keys():
-            log.error("You cannot not use 'parts' as variable name. It is "
-                      "reserved for providing accessing to the other parts of "
-                      "the buildout.")
-            raise UserError("parts used as a variable in %s" % self.name)
-
-        context.update({'parts': self.buildout})
+        context.update({"parts": self.buildout})
+        context.update({"jobs": CurrentList(jobs)})
 
         if "eggs" in context:
-            log.info("Making working set out of the eggs")
+            log.debug("Making working set out of the eggs")
             eggs = Eggs(self.buildout, self.options["recipe"], self.options)
             _names, eggs = eggs.working_set()
             context["eggs"] = eggs
@@ -143,7 +208,7 @@ class Recipe(object):
         modules = split(self.options.get("filters", ""))
 
         for module in modules:
-            log.info("Loading filters from " + module)
+            log.debug("Loading filters from " + module)
             __import__(module)
             filters.update(sys.modules[module].filters)
 
